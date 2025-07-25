@@ -5,6 +5,7 @@ import ResumeCard from "~/components/ResumeCard";
 import { useEffect, useState } from "react";
 import { usePuterStore } from "~/lib/puter";
 import { Footer } from "~/components/Footer";
+import SignOutButton from "../components/SignOutButton";
 
 // Page metadata for SEO
 export const meta: MetaFunction = () => {
@@ -54,9 +55,19 @@ export default function Home() {
             <h1>Track Your Application & Resume</h1>
             {/* Show message based on whether resumes exist */}
             {!loadingResumes && resumes?.length === 0 ? (
+              <>
               <h2>No resumes found. Upload your first resume to get feedback.</h2>
+              {/* <div className="flex flex-col items-center justify-center mt-4 mb-4">
+                  <SignOutButton />
+                </div> */}
+                </>
             ) : (
-              <h2>Review your submissions and check AI-powered feedback.</h2>
+              <>
+                <h2>Review your submissions and check AI-powered feedback.</h2>
+                {/* <div className="flex flex-col items-center justify-center mt-4 mb-4">
+                  <SignOutButton />
+                </div> */}
+              </>
             )}
           </div>
           {/* Loading animation while resumes are loading */}
@@ -81,6 +92,9 @@ export default function Home() {
               <Link to="/upload" className="primary-button w-fit text-xl font-semibold">
                 Upload Resume
               </Link>
+              <div className="flex flex-col items-center justify-center mt-4 mb-4">
+                  <SignOutButton />
+                </div>
             </div>
           )}
         </section>

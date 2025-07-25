@@ -1,15 +1,19 @@
+// ATS (Applicant Tracking System) Score Card component
 import React from 'react'
 
+// Suggestion type for feedback tips
 interface Suggestion {
-  type: "good" | "improve";
-  tip: string;
+  type: "good" | "improve"; // Type of suggestion: positive or needs improvement
+  tip: string; // Suggestion text
 }
 
+// Props for the ATS component
 interface ATSProps {
-  score: number;
-  suggestions: Suggestion[];
+  score: number; // ATS score (0-100)
+  suggestions: Suggestion[]; // List of suggestions for the user
 }
 
+// ATS: Displays a score card with feedback and suggestions
 const ATS: React.FC<ATSProps> = ({ score, suggestions }) => {
   // Determine background gradient based on score
   const gradientClass = score > 69
@@ -53,11 +57,13 @@ const ATS: React.FC<ATSProps> = ({ score, suggestions }) => {
         <div className="space-y-3">
           {suggestions.map((suggestion, index) => (
             <div key={index} className="flex items-start gap-3">
+              {/* Icon for suggestion type */}
               <img
                 src={suggestion.type === "good" ? "/icons/check.svg" : "/icons/warning.svg"}
                 alt={suggestion.type === "good" ? "Check" : "Warning"}
                 className="w-5 h-5 mt-1"
               />
+              {/* Suggestion text, styled by type */}
               <p className={suggestion.type === "good" ? "text-green-700" : "text-amber-700"}>
                 {suggestion.tip}
               </p>

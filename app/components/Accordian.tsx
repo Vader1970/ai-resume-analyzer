@@ -1,17 +1,21 @@
+// Accordion component system for collapsible content panels
 import type { ReactNode } from "react";
 import React, { createContext, useContext, useState } from "react";
 import { cn } from "~/lib/utils";
 
+// Context type for Accordion state and actions
 interface AccordionContextType {
-  activeItems: string[];
-  toggleItem: (id: string) => void;
-  isItemActive: (id: string) => boolean;
+  activeItems: string[]; // Currently open item IDs
+  toggleItem: (id: string) => void; // Toggle open/close for an item
+  isItemActive: (id: string) => boolean; // Check if item is open
 }
 
+// Create Accordion context
 const AccordionContext = createContext<AccordionContextType | undefined>(
   undefined
 );
 
+// Custom hook to access Accordion context
 const useAccordion = () => {
   const context = useContext(AccordionContext);
   if (!context) {
@@ -20,52 +24,62 @@ const useAccordion = () => {
   return context;
 };
 
+// Props for Accordion root component
 interface AccordionProps {
   children: ReactNode;
-  defaultOpen?: string;
-  allowMultiple?: boolean;
+  defaultOpen?: string; // ID of item to open by default
+  allowMultiple?: boolean; // Allow multiple items open at once
   className?: string;
 }
 
+// Accordion root: provides context and manages open state
 export const Accordion: React.FC<AccordionProps> = ({
   children,
   defaultOpen,
   allowMultiple = false,
   className = "",
 }) => {
+  // State: array of open item IDs
   const [activeItems, setActiveItems] = useState<string[]>(
     defaultOpen ? [defaultOpen] : []
   );
 
+  // Toggle open/close for an item
   const toggleItem = (id: string) => {
     setActiveItems((prev) => {
       if (allowMultiple) {
+        // If multiple allowed, add/remove from array
         return prev.includes(id)
           ? prev.filter((item) => item !== id)
           : [...prev, id];
       } else {
+        // Only one open at a time
         return prev.includes(id) ? [] : [id];
       }
     });
   };
 
+  // Check if item is open
   const isItemActive = (id: string) => activeItems.includes(id);
 
   return (
     <AccordionContext.Provider
       value={{ activeItems, toggleItem, isItemActive }}
     >
+      {/* Container for accordion items */}
       <div className={`space-y-2 ${className}`}>{children}</div>
     </AccordionContext.Provider>
   );
 };
 
+// Props for each Accordion item
 interface AccordionItemProps {
-  id: string;
+  id: string; // Unique item ID
   children: ReactNode;
   className?: string;
 }
 
+// Accordion item: wraps header/content, provides border
 export const AccordionItem: React.FC<AccordionItemProps> = ({
   id,
   children,
@@ -78,14 +92,16 @@ export const AccordionItem: React.FC<AccordionItemProps> = ({
   );
 };
 
+// Props for Accordion header (clickable area)
 interface AccordionHeaderProps {
-  itemId: string;
+  itemId: string; // ID of the item this header controls
   children: ReactNode;
   className?: string;
-  icon?: ReactNode;
-  iconPosition?: "left" | "right";
+  icon?: ReactNode; // Optional custom icon
+  iconPosition?: "left" | "right"; // Icon placement
 }
 
+// Accordion header: clickable button to toggle item open/close
 export const AccordionHeader: React.FC<AccordionHeaderProps> = ({
   itemId,
   children,
@@ -96,6 +112,7 @@ export const AccordionHeader: React.FC<AccordionHeaderProps> = ({
   const { toggleItem, isItemActive } = useAccordion();
   const isActive = isItemActive(itemId);
 
+  // Default chevron icon, rotates when open
   const defaultIcon = (
     <svg
       className={cn("w-5 h-5 transition-transform duration-200", {
@@ -115,6 +132,7 @@ export const AccordionHeader: React.FC<AccordionHeaderProps> = ({
     </svg>
   );
 
+  // Handle click to toggle item
   const handleClick = () => {
     toggleItem(itemId);
   };
@@ -129,6 +147,7 @@ export const AccordionHeader: React.FC<AccordionHeaderProps> = ({
         ${className}
       `}
     >
+      {/* Header content and icon (left or right) */}
       <div className="flex items-center space-x-3">
         {iconPosition === "left" && (icon || defaultIcon)}
         <div className="flex-1">{children}</div>
@@ -138,12 +157,14 @@ export const AccordionHeader: React.FC<AccordionHeaderProps> = ({
   );
 };
 
+// Props for Accordion content (collapsible area)
 interface AccordionContentProps {
-  itemId: string;
+  itemId: string; // ID of the item this content belongs to
   children: ReactNode;
   className?: string;
 }
 
+// Accordion content: shows/hides children based on open state
 export const AccordionContent: React.FC<AccordionContentProps> = ({
   itemId,
   children,
@@ -160,6 +181,7 @@ export const AccordionContent: React.FC<AccordionContentProps> = ({
         ${className}
       `}
     >
+      {/* Collapsible content area */}
       <div className="px-4 py-3 ">{children}</div>
     </div>
   );

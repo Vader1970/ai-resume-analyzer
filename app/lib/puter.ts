@@ -1,5 +1,9 @@
 
+// Zustand store for managing Puter.js integration and state
 import { create } from "zustand";
+
+// Extend the global window object to include the puter API
+// This allows for type-safe access to puter features throughout the app
 
 declare global {
   interface Window {
@@ -43,6 +47,7 @@ declare global {
   }
 }
 
+// Zustand store interface for Puter state and actions
 interface PuterStore {
   isLoading: boolean;
   error: string | null;
@@ -97,10 +102,13 @@ interface PuterStore {
   clearError: () => void;
 }
 
+// Helper to get the puter API from the window object
 const getPuter = (): typeof window.puter | null =>
   typeof window !== "undefined" && window.puter ? window.puter : null;
 
+// Zustand store for Puter.js state and actions
 export const usePuterStore = create<PuterStore>((set, get) => {
+  // Helper to set error state and reset auth
   const setError = (msg: string) => {
     set({
       error: msg,
@@ -117,6 +125,7 @@ export const usePuterStore = create<PuterStore>((set, get) => {
     });
   };
 
+  // Check if user is authenticated
   const checkAuthStatus = async (): Promise<boolean> => {
     const puter = getPuter();
     if (!puter) {
@@ -166,6 +175,7 @@ export const usePuterStore = create<PuterStore>((set, get) => {
     }
   };
 
+  // Sign in the user using puter.auth
   const signIn = async (): Promise<void> => {
     const puter = getPuter();
     if (!puter) {
@@ -184,6 +194,7 @@ export const usePuterStore = create<PuterStore>((set, get) => {
     }
   };
 
+  // Sign out the user using puter.auth
   const signOut = async (): Promise<void> => {
     const puter = getPuter();
     if (!puter) {
@@ -213,6 +224,7 @@ export const usePuterStore = create<PuterStore>((set, get) => {
     }
   };
 
+  // Refresh the current user info
   const refreshUser = async (): Promise<void> => {
     const puter = getPuter();
     if (!puter) {
@@ -242,6 +254,7 @@ export const usePuterStore = create<PuterStore>((set, get) => {
     }
   };
 
+  // Initialize the puter API and check authentication
   const init = (): void => {
     const puter = getPuter();
     if (puter) {
@@ -250,6 +263,7 @@ export const usePuterStore = create<PuterStore>((set, get) => {
       return;
     }
 
+    // Retry loading puter every 100ms for up to 10 seconds
     const interval = setInterval(() => {
       if (getPuter()) {
         clearInterval(interval);
@@ -266,6 +280,7 @@ export const usePuterStore = create<PuterStore>((set, get) => {
     }, 10000);
   };
 
+  // File system: write a file
   const write = async (path: string, data: string | File | Blob) => {
     const puter = getPuter();
     if (!puter) {
@@ -275,6 +290,7 @@ export const usePuterStore = create<PuterStore>((set, get) => {
     return puter.fs.write(path, data);
   };
 
+  // File system: read a directory
   const readDir = async (path: string) => {
     const puter = getPuter();
     if (!puter) {
@@ -284,6 +300,7 @@ export const usePuterStore = create<PuterStore>((set, get) => {
     return puter.fs.readdir(path);
   };
 
+  // File system: read a file
   const readFile = async (path: string) => {
     const puter = getPuter();
     if (!puter) {
@@ -293,6 +310,7 @@ export const usePuterStore = create<PuterStore>((set, get) => {
     return puter.fs.read(path);
   };
 
+  // File system: upload files
   const upload = async (files: File[] | Blob[]) => {
     const puter = getPuter();
     if (!puter) {
@@ -302,6 +320,7 @@ export const usePuterStore = create<PuterStore>((set, get) => {
     return puter.fs.upload(files);
   };
 
+  // File system: delete a file
   const deleteFile = async (path: string) => {
     const puter = getPuter();
     if (!puter) {
@@ -311,6 +330,7 @@ export const usePuterStore = create<PuterStore>((set, get) => {
     return puter.fs.delete(path);
   };
 
+  // AI: chat endpoint
   const chat = async (
     prompt: string | ChatMessage[],
     imageURL?: string | PuterChatOptions,
@@ -328,6 +348,7 @@ export const usePuterStore = create<PuterStore>((set, get) => {
     >;
   };
 
+  // AI: feedback endpoint (file + message)
   const feedback = async (path: string, message: string) => {
     const puter = getPuter();
     if (!puter) {
@@ -355,6 +376,7 @@ export const usePuterStore = create<PuterStore>((set, get) => {
     ) as Promise<AIResponse | undefined>;
   };
 
+  // AI: image to text endpoint
   const img2txt = async (image: string | File | Blob, testMode?: boolean) => {
     const puter = getPuter();
     if (!puter) {
@@ -364,6 +386,7 @@ export const usePuterStore = create<PuterStore>((set, get) => {
     return puter.ai.img2txt(image, testMode);
   };
 
+  // KV: get a value by key
   const getKV = async (key: string) => {
     const puter = getPuter();
     if (!puter) {
@@ -373,6 +396,7 @@ export const usePuterStore = create<PuterStore>((set, get) => {
     return puter.kv.get(key);
   };
 
+  // KV: set a value by key
   const setKV = async (key: string, value: string) => {
     const puter = getPuter();
     if (!puter) {
@@ -382,6 +406,7 @@ export const usePuterStore = create<PuterStore>((set, get) => {
     return puter.kv.set(key, value);
   };
 
+  // KV: delete a key
   const deleteKV = async (key: string) => {
     const puter = getPuter();
     if (!puter) {
@@ -391,6 +416,7 @@ export const usePuterStore = create<PuterStore>((set, get) => {
     return puter.kv.delete(key);
   };
 
+  // KV: list keys or values by pattern
   const listKV = async (pattern: string, returnValues?: boolean) => {
     const puter = getPuter();
     if (!puter) {
@@ -403,6 +429,7 @@ export const usePuterStore = create<PuterStore>((set, get) => {
     return puter.kv.list(pattern, returnValues);
   };
 
+  // KV: flush all keys
   const flushKV = async () => {
     const puter = getPuter();
     if (!puter) {

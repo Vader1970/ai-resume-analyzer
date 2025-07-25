@@ -55,18 +55,13 @@ export default function Home() {
             <h1>Track Your Application & Resume</h1>
             {/* Show message based on whether resumes exist */}
             {!loadingResumes && resumes?.length === 0 ? (
-              <>
               <h2>No resumes found. Upload your first resume to get feedback.</h2>
-              {/* <div className="flex flex-col items-center justify-center mt-4 mb-4">
-                  <SignOutButton />
-                </div> */}
-                </>
             ) : (
               <>
                 <h2>Review your submissions and check AI-powered feedback.</h2>
-                {/* <div className="flex flex-col items-center justify-center mt-4 mb-4">
+                <div className="flex flex-col items-center justify-center mt-4 mb-4">
                   <SignOutButton />
-                </div> */}
+                </div>
               </>
             )}
           </div>
@@ -93,8 +88,8 @@ export default function Home() {
                 Upload Resume
               </Link>
               <div className="flex flex-col items-center justify-center mt-4 mb-4">
-                  <SignOutButton />
-                </div>
+                <SignOutButton />
+              </div>
             </div>
           )}
         </section>

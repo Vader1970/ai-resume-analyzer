@@ -1,7 +1,10 @@
+// Summary component: Displays an overview of resume scores and categories
 import ScoreBadge from './ScoreBadge';
 import ScoreGauge from './ScoreGauge'
 
+// Category: Shows a single category's title, badge, and score
 const Category = ({ title, score }: { title: string, score: number }) => {
+    // Choose text color based on score
     const textColor = score > 70 ? 'text-green-600' : score > 49 ? 'text-yellow-600' : 'text-red-600';
 
     return (
@@ -19,10 +22,12 @@ const Category = ({ title, score }: { title: string, score: number }) => {
     )
 }
 
+// Summary: Main component to show overall and per-category scores
 const Summary = ({ feedback }: { feedback: Feedback }) => {
     return (
         <div className="bg-white rounded-2xl shadow-md w-full">
             <div className="flex flex-row items-center p-4 gap-8">
+                {/* Overall score gauge */}
                 <ScoreGauge score={feedback.overallScore} />
 
                 <div className="flex flex-col gap-2">
@@ -33,6 +38,7 @@ const Summary = ({ feedback }: { feedback: Feedback }) => {
                 </div>
             </div>
 
+            {/* Category scores */}
             <Category title="Tone & Style" score={feedback.toneAndStyle.score} />
             <Category title="Content" score={feedback.content.score} />
             <Category title="Structure" score={feedback.structure.score} />

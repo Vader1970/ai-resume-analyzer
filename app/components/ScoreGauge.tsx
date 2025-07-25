@@ -1,11 +1,13 @@
+// ScoreGauge component: Displays a semi-circular gauge for a score using SVG
 import { useEffect, useRef, useState } from "react";
 
 const ScoreGauge = ({ score = 75 }: { score: number }) => {
-  const [pathLength, setPathLength] = useState(0);
-  const pathRef = useRef<SVGPathElement>(null);
+  const [pathLength, setPathLength] = useState(0); // Total length of the SVG arc path
+  const pathRef = useRef<SVGPathElement>(null); // Ref to the foreground arc path
 
-  const percentage = score / 100;
+  const percentage = score / 100; // Convert score to percentage (0-1)
 
+  // On mount, measure the total length of the arc path for animation
   useEffect(() => {
     if (pathRef.current) {
       setPathLength(pathRef.current.getTotalLength());
@@ -17,6 +19,7 @@ const ScoreGauge = ({ score = 75 }: { score: number }) => {
       <div className="relative w-40 h-20">
         <svg viewBox="0 0 100 50" className="w-full h-full">
           <defs>
+            {/* Gradient for the foreground arc */}
             <linearGradient
               id="gaugeGradient"
               x1="0%"
@@ -29,7 +32,7 @@ const ScoreGauge = ({ score = 75 }: { score: number }) => {
             </linearGradient>
           </defs>
 
-          {/* Background arc */}
+          {/* Background arc (gray) */}
           <path
             d="M10,50 A40,40 0 0,1 90,50"
             fill="none"
@@ -38,7 +41,7 @@ const ScoreGauge = ({ score = 75 }: { score: number }) => {
             strokeLinecap="round"
           />
 
-          {/* Foreground arc with rounded ends */}
+          {/* Foreground arc (colored, animated) */}
           <path
             ref={pathRef}
             d="M10,50 A40,40 0 0,1 90,50"
@@ -51,6 +54,7 @@ const ScoreGauge = ({ score = 75 }: { score: number }) => {
           />
         </svg>
 
+        {/* Centered score text */}
         <div className="absolute inset-0 flex flex-col items-center justify-center pt-2">
           <div className="text-xl font-semibold pt-4">{score}/100</div>
         </div>

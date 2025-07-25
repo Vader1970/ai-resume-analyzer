@@ -46,45 +46,46 @@ export default function Home() {
   }, [])
 
   return (
-    <main className="bg-[url('/images/bg-main.svg')] bg-cover">
+    <div className="flex flex-col min-h-screen bg-[url('/images/bg-main.svg')] bg-cover">
       <Navbar />
-
-      <section className="main-section">
-        <div className="page-heading py-16">
-          <h1>Track Your Application & Resume</h1>
-          {/* Show message based on whether resumes exist */}
-          {!loadingResumes && resumes?.length === 0 ? (
-            <h2>No resumes found. Upload your first resume to get feedback.</h2>
-          ) : (
-            <h2>Review your submissions and check AI-powered feedback.</h2>
+      <main className="flex-1">
+        <section className="main-section">
+          <div className="page-heading py-16">
+            <h1>Track Your Application & Resume</h1>
+            {/* Show message based on whether resumes exist */}
+            {!loadingResumes && resumes?.length === 0 ? (
+              <h2>No resumes found. Upload your first resume to get feedback.</h2>
+            ) : (
+              <h2>Review your submissions and check AI-powered feedback.</h2>
+            )}
+          </div>
+          {/* Loading animation while resumes are loading */}
+          {loadingResumes && (
+            <div className="flex flex-col items-center justify-center">
+              <img src="/images/resume-scan-2.gif" alt="resume-scan" className="w-[200px]" />
+            </div>
           )}
-        </div>
-        {/* Loading animation while resumes are loading */}
-        {loadingResumes && (
-          <div className="flex flex-col items-center justify-center">
-            <img src="/images/resume-scan-2.gif" alt="resume-scan" className="w-[200px]" />
-          </div>
-        )}
 
-        {/* Show resume cards if resumes exist */}
-        {!loadingResumes && resumes.length > 0 && (
-          <div className="resumes-section">
-            {resumes.map((resume) => (
-              <ResumeCard key={resume.id} resume={resume} />
-            ))}
-          </div>
-        )}
+          {/* Show resume cards if resumes exist */}
+          {!loadingResumes && resumes.length > 0 && (
+            <div className="resumes-section">
+              {resumes.map((resume) => (
+                <ResumeCard key={resume.id} resume={resume} />
+              ))}
+            </div>
+          )}
 
-        {/* Show upload button if no resumes exist */}
-        {!loadingResumes && resumes?.length === 0 && (
-          <div className="flex flex-col items-center justify-center mt-10 gap-4">
-            <Link to="/upload" className="primary-button w-fit text-xl font-semibold">
-              Upload Resume
-            </Link>
-          </div>
-        )}
-      </section>
+          {/* Show upload button if no resumes exist */}
+          {!loadingResumes && resumes?.length === 0 && (
+            <div className="flex flex-col items-center justify-center mt-10 gap-4">
+              <Link to="/upload" className="primary-button w-fit text-xl font-semibold">
+                Upload Resume
+              </Link>
+            </div>
+          )}
+        </section>
+      </main>
       <Footer />
-    </main>
+    </div>
   );
 }

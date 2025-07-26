@@ -16,7 +16,7 @@ export const meta: MetaFunction = () => {
 }
 
 export default function Home() {
-  const { auth, kv } = usePuterStore(); // Zustand store for auth and key-value
+  const { auth, kv, fs } = usePuterStore(); // Zustand store for auth and key-value
   const navigate = useNavigate(); // React Router navigation
   const [resumes, setResumes] = useState<Resume[]>([]); // List of resumes
   const [loadingResumes, setLoadingResumes] = useState(false); // Loading state
@@ -32,12 +32,18 @@ export default function Home() {
       try {
         setLoadingResumes(true);
         const resumes = (await kv.list('resume:*', true)) as KVItem[];
-        const parsedResumes = resumes?.map((resume) => (
-          JSON.parse(resume.value) as Resume
-        ))
+
+        const parsedResumes = resumes?.map((resume) => {
+          try {
+            return JSON.parse(resume.value) as Resume;
+          } catch (parseError) {
+            console.error('Failed to parse resume:', resume.key, parseError);
+            return null;
+          }
+        }).filter(Boolean) as Resume[];
+
         setResumes(parsedResumes || []);
       } catch (err) {
-        // Optionally, set an error state or log
         console.error("Failed to load resumes", err);
       } finally {
         setLoadingResumes(false);
@@ -45,6 +51,34 @@ export default function Home() {
     }
     loadResumes();
   }, [])
+
+  // Refresh resumes from KV store
+  const refreshResumes = async () => {
+    try {
+      setLoadingResumes(true);
+      const resumes = (await kv.list('resume:*', true)) as KVItem[];
+
+      const parsedResumes = resumes?.map((resume) => {
+        try {
+          return JSON.parse(resume.value) as Resume;
+        } catch (parseError) {
+          console.error('Failed to parse resume on refresh:', resume.key, parseError);
+          return null;
+        }
+      }).filter(Boolean) as Resume[];
+
+      setResumes(parsedResumes || []);
+    } catch (err) {
+      console.error("Failed to refresh resumes", err);
+    } finally {
+      setLoadingResumes(false);
+    }
+  };
+
+  // Handle resume deletion
+  const handleResumeDelete = (deletedId: string) => {
+    setResumes(prevResumes => prevResumes.filter(resume => resume.id !== deletedId));
+  };
 
   return (
     <div className="flex flex-col min-h-screen bg-[url('/images/bg-main.svg')] bg-cover">
@@ -76,7 +110,12 @@ export default function Home() {
           {!loadingResumes && resumes.length > 0 && (
             <div className="resumes-section">
               {resumes.map((resume) => (
-                <ResumeCard key={resume.id} resume={resume} />
+                <ResumeCard
+                  key={resume.id}
+                  resume={resume}
+                  onDelete={handleResumeDelete}
+                  onRefresh={refreshResumes}
+                />
               ))}
             </div>
           )}
